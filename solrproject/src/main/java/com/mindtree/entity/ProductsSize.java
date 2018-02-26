@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class ProductsSize {
 
 	ArrayList<Products> productList;
-	long size;
+	long sizeP;
 	ArrayList<Categories> categoryList;
 	
 	public ArrayList<Products> getProductList() {
@@ -21,9 +21,9 @@ public class ProductsSize {
 		this.categoryList = categoryList;
 	}
 	public long getSize() {
-		return size;
+		return sizeP;
 	}
 	public void setSize(long size) {
-		this.size = size;
+		this.sizeP = size;
 	}
 }

@@ -56,7 +56,7 @@ public class FacetQueryDao implements FacetQueryInteface{
 		
 		HttpSolrServer server = new HttpSolrServer(url);
 		SolrQuery query = new SolrQuery();
-		
+		search = search.replaceAll("-"," ");
 		query.setQuery(search);
 		query.setFacet(true);
         query.addFacetField("catlevel0");
@@ -72,9 +72,56 @@ public class FacetQueryDao implements FacetQueryInteface{
 		productsList = (ArrayList<Products>) response.getBeans(Products.class);
 		ps.setProductList(productsList);
 		
+		System.out.println("Query :  " + query.toString());
+
+		catList = setCategoriesList(search);
+		System.out.println("Image Small"+productsList.get(0).getImage_small());
+		
+		ps.setCategoryList(catList);
+		return ps;
+	}
+	
+
+private ArrayList<Categories> setCategoriesList(String search) throws IOException, SolrServerException {
+		
+		ArrayList<Categories> catList = new ArrayList<Categories>();
+		try{
+			prop = new Properties();
+			String fileName = "application.properties";
+			
+			inputstream = getClass().getClassLoader().getResourceAsStream(fileName);
+			if (inputstream != null) 
+				prop.load(inputstream);
+			else 
+				throw new FileNotFoundException("property file '" + fileName + "' not found in the classpath");
+			
+			url = prop.getProperty("url");
+			
+			}catch (Exception e) {
+				System.out.println("Exception: " + e);
+			} finally {
+				inputstream.close();
+			}
+	
+		
+		
+		
+		HttpSolrServer server = new HttpSolrServer(url);
+		SolrQuery query = new SolrQuery();
+		
+		search = search.replaceAll("-"," ");
+		query.setQuery(search);
+		query.setFacet(true).
+        addFacetField("catlevel0").
+        setFacetLimit(10).
+        setFacetSort("index");
+		
+		QueryResponse response = server.query(query);
+		long size = response.getResults().getNumFound();
+		
 		
 		for(FacetField ff :response.getFacetFields()){
-		
+			
 			List<Count> catNames = ff.getValues();
 //			System.out.println("Catljdls" + ff.toString());
 			
@@ -86,15 +133,9 @@ public class FacetQueryDao implements FacetQueryInteface{
 				catList.add(categories);
 			}
 			
-			
-			
 		}
 		
-		System.out.println("Image Small"+productsList.get(0).getImage_small());
-		
-		ps.setCategoryList(catList);
-		return ps;
+		return catList;
 	}
-	
 
 }

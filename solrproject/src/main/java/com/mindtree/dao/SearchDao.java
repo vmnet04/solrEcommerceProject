@@ -55,15 +55,19 @@ public class SearchDao implements SearchDaoInterface{
 		HttpSolrServer server = new HttpSolrServer(url);
 		SolrQuery query = new SolrQuery();
 		
+		search = search.replaceAll("-"," ");
+		System.out.println("search in searchDao : " + search);
 		query.setQuery(search);
 		query.setFacet(true).
         addFacetField("catlevel0").
         setFacetLimit(10).
         setFacetSort("index");
 		
+		
 		QueryResponse response = server.query(query);
 		long size = response.getResults().getNumFound();
 		
+		System.out.println("Query in searchDao : " + query.toString());
 		ps.setSize(size);
 		
 		productsList = (ArrayList<Products>) response.getBeans(Products.class);

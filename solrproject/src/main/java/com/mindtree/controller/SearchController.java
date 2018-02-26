@@ -32,36 +32,24 @@ public class SearchController {
 	@Autowired
 	FacetQueryManager facetManager;
 	
-	@RequestMapping(value = "/search",method=RequestMethod.POST)
-	@ResponseBody ModelAndView searchQuery(@RequestBody String search,HttpServletRequest request,ModelAndView mv) throws SolrServerException, IOException{
+	@RequestMapping(value ={ "/#/search","/search"},method=RequestMethod.POST)
+	@ResponseBody ProductsSize searchQuery(@RequestBody String search) throws SolrServerException, IOException{
 		
-		System.out.println("Search : "+search+"\n");
+		
+		System.out.println("search"+search);
 		ProductsSize ps = searchManager.searchQuery(search);
-		
-		HttpSession session = request.getSession();
-		
-		mv.addObject("products",ps.getProductList());
-		mv.addObject("categories",ps.getCategoryList());
-		mv.addObject("size",ps.getSize());
-		mv.setViewName("index");
-		System.out.println("mv"+mv+"\n\n");
-		session.setAttribute("searchText", search);
-		session.setAttribute("size1",ps.getSize());
-		session.setAttribute("catList", ps.getCategoryList());
-		session.setAttribute("productList",ps.getProductList());
-		
-		
-		return mv;
+		System.out.println(ps);
+		System.out.println("Size : " + ps.getSize()+"\n");
+		return ps;
 				
 	}
 	
 	@RequestMapping(value="/{catlevel}/{search}/{name}",method=RequestMethod.GET)
-	@ResponseBody ModelAndView facetQuery(@PathVariable("catlevel") int catlevel, @PathVariable("name") String name,HttpServletRequest request,
+	@ResponseBody ProductsSize facetQuery(@PathVariable("catlevel") int catlevel, @PathVariable("name") String name,
 																		@PathVariable("search") String search) 
 									throws SolrServerException, IOException{
 		
-		HttpSession session = request.getSession();
-		//String search = (String) session.getAttribute("searchText");
+		
 		
 		System.out.println("search in facet -- "+search);
 		System.out.println("name -- "+name);
@@ -69,22 +57,9 @@ public class SearchController {
 		
 		ProductsSize ps = facetManager.facetQuery(catlevel, name, search);
 		
-		ModelAndView mv = new ModelAndView();
 		
-		mv.addObject("products",ps.getProductList());
-		mv.addObject("categories",ps.getCategoryList());
-		mv.addObject("size",ps.getSize());
-		mv.setViewName("index");
-		
-		session.setAttribute("searchText", search);
-		session.setAttribute("catlevel",catlevel);
-		session.setAttribute("size1",ps.getSize());
-		session.setAttribute("catList", ps.getCategoryList());
-		session.setAttribute("productList",ps.getProductList());
-		
-		System.out.println("modelandviee "+mv);
 		System.out.println("Size: "+ps.getSize());
-		return mv;
+		return ps;
 	}
 }
 
